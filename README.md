@@ -1,4 +1,5 @@
 # eqth-client
+![eQTH](public/github-image.png)
 
 ## Requirements
 You need these things installed:
