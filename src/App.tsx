@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { useEffect, useRef, useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [getUserMediaSupported, setGetUserMediaSupported] = useState(false);
+  const [error, setError] = useState("");
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (navigator.mediaDevices.getUserMedia) {
+      setGetUserMediaSupported(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const setupStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        audioRef.current!.srcObject = stream;
+        audioRef.current!.play();
+      } catch (err) {
+        setError(err + "");
+      }
+    };
+    if (getUserMediaSupported) {
+      setupStream();
+    }
+  }, [getUserMediaSupported]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>eQTH 📻</h1>
+      {!getUserMediaSupported && <p>getUserMedia not supported by browser</p>}
+      <audio ref={audioRef} controls={true} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
